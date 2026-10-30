@@ -19,11 +19,18 @@ Assistente pessoal de IA com interface de chat, memória de longo prazo (RAG), a
 
 ## Requisitos
 
-- Python 3.10 ou superior
+- Python 3.13 ou superior (testado com o 3.14)
 - [Ollama](https://ollama.com) instalado e em execução (por padrão em `http://localhost:11434`)
 - Memória RAM/VRAM suficiente para os modelos. Em computadores modestos, as respostas podem ser lentas.
 
-## Instalação
+## Instalação no Windows
+
+1. Instale o [Python](https://www.python.org/downloads/), marcando **"Add python.exe to PATH"**, e o [Ollama](https://ollama.com).
+2. Nesta página, clique em **Code > Download ZIP** e descompacte a pasta onde quiser.
+3. Dê dois cliques em **`instalar.bat`**. Ele instala tudo e pergunta se pode baixar os modelos de IA (são vários GB).
+4. Abra a iAna com **`iAna.bat`**. O navegador abre sozinho; deixe a janela preta aberta enquanto usa.
+
+## Instalação manual (Windows, Linux e macOS)
 
 ```bash
 # 1. Clone o repositório
@@ -80,6 +87,8 @@ iana/
 ├── media.py            # documentos, imagens, voz (STT/TTS) e áudio
 ├── storage.py          # conversas e projetos em disco
 ├── ui.py               # interface, estilos e scripts da página
+├── instalar.bat        # instala tudo no Windows
+├── iAna.bat            # abre o app no Windows
 ├── Icons/              # ícones da aba do navegador
 ├── requirements.txt    # dependências Python
 └── README.md
