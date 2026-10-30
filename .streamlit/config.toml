@@ -1,0 +1,8 @@
+[server]
+# Só este computador acessa a iAna. Sem isto o Streamlit escuta em todas as
+# interfaces e qualquer pessoa na mesma rede (ex.: Wi-Fi público) consegue
+# abrir as conversas e os documentos memorizados.
+address = "localhost"
+
+[browser]
+gatherUsageStats = false

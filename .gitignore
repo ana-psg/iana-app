@@ -1,0 +1,28 @@
+# Dados gerados pelo app (pessoais, nunca enviar ao GitHub)
+historico/
+memoria/
+audio/
+# Nomes de pasta da versão 1.0
+historico_conversas/
+memoria_vetorial/
+audios_temp/
+
+# Backups locais
+*.zip
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Segredos e configurações locais
+.env
+.streamlit/secrets.toml
+
+# Editores e sistema operacional
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

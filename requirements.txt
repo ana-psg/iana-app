@@ -1,0 +1,14 @@
+# Versões testadas com Python 3.14 (outubro/2026).
+streamlit==1.60.0
+chromadb==1.5.9
+ollama==0.6.2              # usado pelo OllamaEmbeddingFunction do chromadb
+requests==2.34.2
+ddgs==9.16.0               # pesquisa na web (substitui duckduckgo_search)
+edge-tts==7.2.8            # voz das respostas
+SpeechRecognition==3.17.0  # transcrição da voz
+faster-whisper==1.2.1      # identifica o idioma falado (modo Auto)
+audioop-lts==0.2.2         # exigido pelo SpeechRecognition no Python 3.13+
+langdetect==1.0.9
+pillow==12.3.0
+PyPDF2==3.0.1
+python-docx==1.2.0
