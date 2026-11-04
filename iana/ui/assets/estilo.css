@@ -778,8 +778,12 @@ button[title="Open sidebar"] {
     box-shadow: 0 6px 20px rgba(236, 72, 153, 0.32);
 }
 .greeting-avatar svg { display: block; }
-.greeting-title {
-    font-size: 26px;
+/* O h1 do Streamlit tem regra própria mais forte: o seletor com h1 e o !important garantem o tamanho.
+   Escala com a tela: 40 px no computador, 26 px no celular. */
+h1.greeting-title,
+[data-testid="stMarkdownContainer"] h1.greeting-title {
+    font-size: clamp(26px, 6vw, 40px) !important;
+    padding: 0 !important;
     font-weight: 700;
     color: var(--text-primary);
     letter-spacing: -0.02em;

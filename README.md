@@ -2,9 +2,7 @@
 
 Assistente pessoal de IA com interface de chat, memória de longo prazo (RAG), análise de imagens e voz. O modelo de linguagem roda localmente no seu computador através do [Ollama](https://ollama.com).
 
-<!-- Adicione aqui um print da interface:
-![Tela da iAna](docs/screenshot.png)
--->
+![Tela inicial da iAna: chat com atalhos para analisar documentos, imagens e pesquisar na web](docs/tela-inicial.png)
 
 ## Recursos
 
