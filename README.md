@@ -71,6 +71,8 @@ As configurações ficam em `config.py`:
 | `RAG_DISTANCIA_MAX` | Quão parecido um trecho precisa ser da pergunta para entrar na resposta |
 | `NOME_USUARIO` | Seu nome na tela inicial (opcional) |
 | `OLLAMA_OPTIONS` / `OLLAMA_NUM_CTX` | Contexto, temperatura e tamanho máximo da resposta |
+| `OLLAMA_OPTIONS_VISAO` | Contexto e tamanho da resposta do modelo de visão |
+| `HISTORICO_MAX_MENSAGENS` / `HISTORICO_MAX_CHARS` | Quanto da conversa é enviado ao modelo a cada resposta |
 | `OLLAMA_THINK` | Raciocínio prévio do modelo (desligado: respostas bem mais rápidas) |
 | `MAPA_IDIOMAS` | Idiomas e vozes da entrada e da resposta por voz |
 

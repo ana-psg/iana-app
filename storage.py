@@ -14,6 +14,7 @@ def criar_nova_sessao(projeto: str = "Geral") -> None:
     st.session_state.id_conversa_atual = datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + str(uuid.uuid4())[:4]
     st.session_state.mensagens = []
     st.session_state.resumo_conversa = ""
+    st.session_state.nome_conversa = None
     st.session_state.projeto_atual = projeto
     st.session_state.ultima_foi_voz = False
     st.session_state.anexo_pendente = None
@@ -25,6 +26,7 @@ def criar_nova_sessao(projeto: str = "Geral") -> None:
     st.session_state._mic_version = st.session_state.get("_mic_version", 0) + 1
     st.session_state._ultimo_resumo_em = 0
     st.session_state._pedido_com_anexo = None
+    st.session_state._resumo_futuro = None
 
 def avisar(texto: str, icone: str = "⚠️", duracao: str = "long") -> None:
     """Agenda um aviso (toast) para o fim do ciclo. Um st.toast chamado
@@ -44,6 +46,8 @@ def garantir_estado_inicial() -> None:
 
     chaves = {
         "resumo_conversa": "",
+        "nome_conversa": None,
+        "_resumo_futuro": None,
         "ultima_foi_voz": False,
         "anexo_pendente": None,
         "documento_ativo": None,

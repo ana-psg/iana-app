@@ -4,6 +4,7 @@ Módulo de Interface Gráfica (UI/UX) e Componentes Visuais.
 import os
 import re
 import html
+import base64
 import logging
 from datetime import datetime
 from urllib.parse import quote
@@ -1554,19 +1555,19 @@ def renderizar_input_chat() -> None:
 # =============================================================================
 # Mensagens anteriores
 # =============================================================================
+@st.cache_data(max_entries=200, show_spinner=False)
+def _decodificar_imagem(b64: str) -> bytes:
+    return base64.b64decode(b64)
+
 def renderizar_mensagens_anteriores():
     for m in st.session_state.mensagens:
         with st.chat_message(m["role"]):
             imagens = imagens_da_mensagem(m)
             if imagens:
-                st.markdown(
-                    "".join(
-                        f'<img src="data:image/jpeg;base64,{b64}" '
-                        f'style="max-width:240px; border-radius:10px; margin:0 8px 8px 0;">'
-                        for b64 in imagens
-                    ),
-                    unsafe_allow_html=True
-                )
+                # st.image serve a imagem por URL (o navegador guarda em
+                # cache). Antes o base64 inteiro ia dentro do HTML de novo a
+                # cada interação, deixando conversas com fotos lentas.
+                st.image([_decodificar_imagem(b64) for b64 in imagens], width=240)
 
             if m["role"] == "assistant":
                 renderizar_resposta_formatada(m["content"])

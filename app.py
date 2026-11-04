@@ -15,6 +15,7 @@ from ui import (
     exibir_boas_vindas, renderizar_mensagens_anteriores
 )
 from processor import processar_resposta
+from brain import aquecer_modelos
 
 def _processar_carregamento_conversa() -> None:
     """
@@ -30,6 +31,8 @@ def _processar_carregamento_conversa() -> None:
     st.session_state.id_conversa_atual = c_id
     st.session_state.projeto_atual = dados.get("projeto", "Geral")
     st.session_state.resumo_conversa = dados.get("resumo", "")
+    st.session_state.nome_conversa = dados.get("nome")
+    st.session_state._resumo_futuro = None
     st.session_state.mensagens = dados.get("mensagens", [])
     st.session_state._ultimo_resumo_em = len(st.session_state.mensagens)
     st.session_state._pendente_processar = False
@@ -49,6 +52,7 @@ def main() -> None:
         os.makedirs(d, exist_ok=True)
 
     garantir_estado_inicial()
+    aquecer_modelos()
     if not st.session_state.get("_audios_orfaos_limpos"):
         st.session_state._audios_orfaos_limpos = True
         limpar_audios_orfaos()

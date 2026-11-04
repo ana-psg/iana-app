@@ -13,7 +13,11 @@ import speech_recognition as sr
 import edge_tts
 import streamlit as st
 from PIL import Image, ImageOps
-from langdetect import detect, LangDetectException
+from langdetect import detect, LangDetectException, DetectorFactory
+
+# Sem semente o langdetect é aleatório: o mesmo texto podia ganhar vozes de
+# idiomas diferentes de uma vez para outra.
+DetectorFactory.seed = 0
 
 from config import DIRETORIO_AUDIO, LADO_MAX_IMAGEM, MAPA_IDIOMAS, IDIOMA_PADRAO
 
