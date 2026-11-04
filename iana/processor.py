@@ -1,25 +1,40 @@
 """
 Módulo de Processamento de Respostas e Orquestração do Fluxo de Chat.
 """
+
+import base64
+import logging
 import os
 import time
 import uuid
-import base64
-import logging
-from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
+
 import streamlit as st
 
-from config import (
-    SYSTEM_PROMPT, MODELO_TEXTO, MODELO_VISAO, OLLAMA_KEEP_ALIVE, OLLAMA_OPTIONS, OLLAMA_OPTIONS_VISAO,
-    OLLAMA_THINK, PROMPT_PADRAO_IMAGEM, COMPLEMENTO_PROMPT_VISAO,
-    HISTORICO_MAX_MENSAGENS, HISTORICO_MAX_CHARS, HISTORICO_MAX_MENSAGENS_VISAO,
+from iana.brain import (
+    atualizar_resumo_trabalho,
+    buscar_na_memoria,
+    buscar_na_web,
+    definir_consulta_web,
+    gerar_streaming_ollama,
 )
-from storage import salvar_conversa, gerar_titulo_automatico, imagens_da_mensagem
-from media import gerar_audio_resposta, renderizar_audio_sequencial
-from brain import (
-    buscar_na_memoria, definir_consulta_web, buscar_na_web, atualizar_resumo_trabalho, gerar_streaming_ollama
+from iana.config import (
+    COMPLEMENTO_PROMPT_VISAO,
+    HISTORICO_MAX_CHARS,
+    HISTORICO_MAX_MENSAGENS,
+    HISTORICO_MAX_MENSAGENS_VISAO,
+    MODELO_TEXTO,
+    MODELO_VISAO,
+    OLLAMA_KEEP_ALIVE,
+    OLLAMA_OPTIONS,
+    OLLAMA_OPTIONS_VISAO,
+    OLLAMA_THINK,
+    PROMPT_PADRAO_IMAGEM,
+    SYSTEM_PROMPT,
 )
+from iana.media import gerar_audio_resposta, renderizar_audio_sequencial
+from iana.storage import gerar_titulo_automatico, imagens_da_mensagem, salvar_conversa
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +51,21 @@ INTERVALO_RESUMO = 6
 _EXECUTOR = ThreadPoolExecutor(max_workers=3, thread_name_prefix="iana")
 
 _DIAS = ["segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado", "domingo"]
-_MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho",
-          "agosto", "setembro", "outubro", "novembro", "dezembro"]
+_MESES = [
+    "janeiro",
+    "fevereiro",
+    "março",
+    "abril",
+    "maio",
+    "junho",
+    "julho",
+    "agosto",
+    "setembro",
+    "outubro",
+    "novembro",
+    "dezembro",
+]
+
 
 def _data_hoje() -> str:
     # Só a data, sem a hora: o prompt do sistema fica igual o dia todo e o
@@ -45,13 +73,17 @@ def _data_hoje() -> str:
     agora = datetime.now()
     return f"{_DIAS[agora.weekday()]}, {agora.day} de {_MESES[agora.month - 1]} de {agora.year}"
 
+
 def _mensagem_valida(m: dict) -> bool:
     """Respostas de erro e vazias não voltam para o modelo como se fossem
     respostas de verdade."""
     conteudo = m.get("content") or ""
-    if m["role"] == "assistant" and (conteudo.startswith("⚠️") or conteudo.startswith("Erro:") or conteudo == "(sem resposta)"):
+    if m["role"] == "assistant" and (
+        conteudo.startswith("⚠️") or conteudo.startswith("Erro:") or conteudo == "(sem resposta)"
+    ):
         return False
     return bool(conteudo.strip() or imagens_da_mensagem(m))
+
 
 def _montar_historico(anteriores: list[dict], tem_img: bool) -> list[dict]:
     """Últimas mensagens dentro de um limite de mensagens e de caracteres.
@@ -80,9 +112,11 @@ def _montar_historico(anteriores: list[dict], tem_img: bool) -> list[dict]:
         selecionadas.pop(0)
     return selecionadas
 
+
 def _pesquisar(pergunta: str, contexto: list[dict], data_hoje: str) -> tuple[str | None, str]:
     consulta = definir_consulta_web(pergunta, contexto, data_hoje)
     return consulta, (buscar_na_web(consulta) if consulta else "")
+
 
 def _aplicar_resumo_pronto() -> None:
     pendente = st.session_state.get("_resumo_futuro")
@@ -97,6 +131,7 @@ def _aplicar_resumo_pronto() -> None:
     except Exception as e:
         logger.warning("Falha no resumo em segundo plano: %s", e)
 
+
 def _agendar_resumo() -> None:
     """O resumo era feito ANTES da resposta, a cada 6 mensagens: uma chamada
     extra ao modelo (até 300 tokens) que atrasava a resposta em vários
@@ -110,6 +145,7 @@ def _agendar_resumo() -> None:
     futuro = _EXECUTOR.submit(atualizar_resumo_trabalho, copia, st.session_state.resumo_conversa)
     st.session_state._resumo_futuro = (st.session_state.id_conversa_atual, futuro)
     st.session_state._ultimo_resumo_em = len(mensagens)
+
 
 def processar_resposta(estado: dict, modo_voz: bool = False) -> None:
     ultima = st.session_state.mensagens[-1]
@@ -155,16 +191,14 @@ def processar_resposta(estado: dict, modo_voz: bool = False) -> None:
                         texto_doc[:MAX_CHARS_DOCUMENTO]
                         + "\n\n[... documento truncado; trechos relevantes do restante podem aparecer na memória ...]"
                     )
-                mensagens_api.append({
-                    "role": "system",
-                    "content": f"Documento anexado pelo usuário ({doc['nome']}):\n\n{texto_doc}"
-                })
+                mensagens_api.append(
+                    {"role": "system", "content": f"Documento anexado pelo usuário ({doc['nome']}):\n\n{texto_doc}"}
+                )
 
             if st.session_state.resumo_conversa:
-                mensagens_api.append({
-                    "role": "system",
-                    "content": f"Resumo da conversa até aqui: {st.session_state.resumo_conversa}"
-                })
+                mensagens_api.append(
+                    {"role": "system", "content": f"Resumo da conversa até aqui: {st.session_state.resumo_conversa}"}
+                )
 
             mensagens_api.extend(_montar_historico(anteriores, tem_img))
 
@@ -191,7 +225,7 @@ def processar_resposta(estado: dict, modo_voz: bool = False) -> None:
                     logger.warning("Pesquisa web falhou: %s", e)
                     consulta, web = None, ""
                 if web:
-                    contexto_extra.append(f"Resultados da web para \"{consulta}\" (hoje é {data_hoje}):\n{web}")
+                    contexto_extra.append(f'Resultados da web para "{consulta}" (hoje é {data_hoje}):\n{web}')
 
             pergunta_efetiva = pergunta if pergunta.strip() else (PROMPT_PADRAO_IMAGEM if tem_img else "")
             if contexto_extra:
@@ -243,12 +277,14 @@ def processar_resposta(estado: dict, modo_voz: bool = False) -> None:
         st.error(texto_acumulado)
 
     finally:
-        st.session_state.mensagens.append({
-            "role": "assistant",
-            "content": texto_acumulado or "(sem resposta)",
-            # Só o nome do arquivo: o caminho completo quebra se a pasta mudar.
-            "audio": os.path.basename(caminho_final) if caminho_final else ""
-        })
+        st.session_state.mensagens.append(
+            {
+                "role": "assistant",
+                "content": texto_acumulado or "(sem resposta)",
+                # Só o nome do arquivo: o caminho completo quebra se a pasta mudar.
+                "audio": os.path.basename(caminho_final) if caminho_final else "",
+            }
+        )
 
         try:
             # O nome fica na sessão: antes o arquivo inteiro da conversa (com
@@ -260,7 +296,7 @@ def processar_resposta(estado: dict, modo_voz: bool = False) -> None:
                 st.session_state.mensagens,
                 nome,
                 st.session_state.projeto_atual,
-                st.session_state.resumo_conversa
+                st.session_state.resumo_conversa,
             )
         except Exception as e:
             logger.warning("Falha ao salvar conversa: %s", e, exc_info=True)

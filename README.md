@@ -61,7 +61,7 @@ O navegador abrirá automaticamente em `http://localhost:8501`.
 
 ## Configuração
 
-As configurações ficam em `config.py`:
+As configurações ficam em `iana/config.py`:
 
 | Constante | Função |
 |---|---|
@@ -81,18 +81,24 @@ Qualquer modelo disponível no Ollama pode ser usado, basta trocar o nome e exec
 ## Estrutura do projeto
 
 ```
-iana/
-├── app.py              # ponto de entrada (orquestra a interface e o fluxo)
-├── config.py           # modelos, diretórios, idiomas e prompts
-├── brain.py            # Ollama, memória vetorial (RAG), pesquisa web e resumo
-├── processor.py        # monta o contexto e gera cada resposta
-├── media.py            # documentos, imagens, voz (STT/TTS) e áudio
-├── storage.py          # conversas e projetos em disco
-├── ui.py               # interface, estilos e scripts da página
+iana-app/
+├── app.py              # ponto de entrada do Streamlit (orquestra a interface e o fluxo)
+├── iana/               # o app
+│   ├── config.py         # modelos, diretórios, idiomas e prompts
+│   ├── brain.py          # Ollama, memória vetorial (RAG), pesquisa web e resumo
+│   ├── processor.py      # monta o contexto e gera cada resposta
+│   ├── media.py          # documentos, imagens, voz (STT/TTS) e áudio
+│   ├── storage.py        # conversas e projetos em disco
+│   └── ui/               # interface
+│       ├── recursos.py     # configuração da página, CSS e scripts
+│       ├── sidebar.py      # projetos, conversas, histórico e memória
+│       ├── chat.py         # boas-vindas, mensagens, anexos, voz e caixa de mensagem
+│       └── assets/         # estilo.css (tokens e componentes) e um .js por comportamento
+├── tests/              # testes automáticos (pytest), sem precisar do Ollama
 ├── instalar.bat        # instala tudo no Windows
 ├── iAna.bat            # abre o app no Windows
 ├── Icons/              # ícones da aba do navegador
-├── requirements.txt    # dependências Python
+├── requirements.txt    # dependências Python (requirements-dev.txt: testes e lint)
 └── README.md
 ```
 
@@ -113,6 +119,16 @@ O modelo de linguagem roda localmente, mas alguns recursos usam serviços online
 - **Pesquisa na web**: as consultas são enviadas ao DuckDuckGo
 
 Se você quiser uso totalmente offline, evite os recursos de voz e de pesquisa na web.
+
+## Desenvolvimento
+
+```bash
+pip install -r requirements-dev.txt
+ruff check . && ruff format --check .
+python -m pytest
+```
+
+Os testes usam pastas temporárias e nunca tocam nas suas conversas nem na memória.
 
 ## Limitações
 

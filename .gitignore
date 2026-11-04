@@ -26,3 +26,11 @@ env/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Logs e caches de ferramentas
+*.log
+.pytest_cache/
+.ruff_cache/
+
+# Anotações locais de sessões
+registro-claude/

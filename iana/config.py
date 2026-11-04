@@ -52,7 +52,8 @@ HISTORICO_MAX_MENSAGENS_VISAO = 4
 # =============================================================================
 # Diretórios do Projeto
 # =============================================================================
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Pasta do projeto (um nível acima do pacote iana/): conversas, memória e áudios ficam nela
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DIRETORIO_HISTORICO = os.path.join(BASE_DIR, "historico")
 DIRETORIO_AUDIO = os.path.join(BASE_DIR, "audio")
@@ -75,9 +76,9 @@ LADO_MAX_IMAGEM = 1024
 
 MAPA_IDIOMAS = {
     "pt": {"nome": "Português", "voz_tts": "pt-BR-FranciscaNeural", "stt": "pt-BR"},
-    "en": {"nome": "Inglês",    "voz_tts": "en-US-AriaNeural",      "stt": "en-US"},
-    "es": {"nome": "Espanhol",  "voz_tts": "es-ES-ElviraNeural",    "stt": "es-ES"},
-    "fr": {"nome": "Francês",   "voz_tts": "fr-FR-DeniseNeural",    "stt": "fr-FR"},
+    "en": {"nome": "Inglês", "voz_tts": "en-US-AriaNeural", "stt": "en-US"},
+    "es": {"nome": "Espanhol", "voz_tts": "es-ES-ElviraNeural", "stt": "es-ES"},
+    "fr": {"nome": "Francês", "voz_tts": "fr-FR-DeniseNeural", "stt": "fr-FR"},
 }
 
 IDIOMA_PADRAO = "pt"
@@ -99,8 +100,8 @@ Não cumprimente nem repita o nome da pessoa a cada resposta: vá direto ao pont
 # respondia "não consigo ver imagens" em metade das vezes.
 COMPLEMENTO_PROMPT_VISAO = "Você consegue ver as imagens anexadas pelo usuário nesta conversa. Analise-as diretamente."
 
-PROMPT_PADRAO_IMAGEM ="""
-Analise a imagem fornecida e descreva detalhadamente o que vê. 
-Se houver texto na imagem, transcreva-o. 
+PROMPT_PADRAO_IMAGEM = """
+Analise a imagem fornecida e descreva detalhadamente o que vê.
+Se houver texto na imagem, transcreva-o.
 Responda sempre em português.
 """
