@@ -1150,7 +1150,7 @@ def _agrupar_conversas(conversas: list[str], dados_conv: dict, proj_ativo: str) 
         try:
             data = datetime.strptime(c_id[:8], "%Y%m%d").date()
             (recentes if (hoje - data).days <= 7 else antigas).append(c_id)
-        except Exception:
+        except ValueError:  # id sem data no começo (conversas antigas)
             recentes.append(c_id)
     return recentes, antigas
 

@@ -61,7 +61,8 @@ def _migrar_colecao_legada(cliente, colecao) -> None:
     try:
         legada = cliente.get_collection(COLECAO_LEGADA)
         dados = legada.get(include=["documents", "metadatas"])
-    except Exception:
+    except Exception as e:  # coleção antiga não existe: nada a migrar
+        logger.debug("Sem coleção legada para migrar: %s", e)
         dados = {"ids": []}
     if dados["ids"]:
         logger.info("Migrando %d trechos da memória para %s", len(dados["ids"]), colecao.name)
@@ -172,8 +173,8 @@ def apagar_toda_memoria() -> None:
     # Quem pede para apagar a memória espera que o backup antigo vá junto.
     try:
         chromadb.PersistentClient(path=DIRETORIO_MEMORIA).delete_collection(COLECAO_LEGADA)
-    except Exception:
-        pass
+    except Exception as e:  # já não existia
+        logger.debug("Coleção legada não removida: %s", e)
 
 # Origens que ficam no índice mas não entram nas respostas. "Imagem" eram
 # descrições automáticas de imagens antigas: apareciam em perguntas sem

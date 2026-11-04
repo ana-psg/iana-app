@@ -3,12 +3,15 @@ iAna — Assistente Pessoal de IA Local.
 Orquestrador Principal (App Entry Point).
 """
 
+import json
 import os
+import re
+
 import streamlit as st
 
 from config import DIRETORIO_HISTORICO, DIRETORIO_AUDIO, DIRETORIO_MEMORIA
 from storage import (
-    garantir_estado_inicial, carregar_conversa, limpar_audios_orfaos, exibir_avisos_pendentes
+    garantir_estado_inicial, carregar_conversa, limpar_audios_orfaos, exibir_avisos_pendentes, avisar
 )
 from ui import (
     inicializar_interface, renderizar_sidebar, renderizar_input_chat,
@@ -27,7 +30,13 @@ def _processar_carregamento_conversa() -> None:
         return
 
     st.query_params.clear()
-    dados = carregar_conversa(c_id)
+    # Mesmo filtro do storage: o id guardado é sempre o do arquivo (link editado à mão não vira outra conversa)
+    c_id = re.sub(r"[^a-zA-Z0-9_\-]", "", c_id)
+    try:
+        dados = carregar_conversa(c_id)
+    except (ValueError, OSError, json.JSONDecodeError):
+        avisar("Não consegui abrir essa conversa. O link está errado ou o arquivo está corrompido.")
+        return
     st.session_state.id_conversa_atual = c_id
     st.session_state.projeto_atual = dados.get("projeto", "Geral")
     st.session_state.resumo_conversa = dados.get("resumo", "")
