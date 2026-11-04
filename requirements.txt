@@ -10,5 +10,5 @@ faster-whisper==1.2.1      # identifica o idioma falado (modo Auto)
 audioop-lts==0.2.2         # exigido pelo SpeechRecognition no Python 3.13+
 langdetect==1.0.9
 pillow==12.3.0
-PyPDF2==3.0.1
+pypdf==6.21.4              # leitura de PDF (o PyPDF2 foi descontinuado)
 python-docx==1.2.0

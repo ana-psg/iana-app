@@ -1,0 +1,856 @@
+/* ---------- Tokens: dark ---------- */
+html[data-iana-theme="dark"] {
+    --bg-base: #0A0A0C;
+    --bg-surface: #131316;
+    --bg-elevated: #1C1C20;
+    --bg-hover: #232328;
+    --bg-active: #2A2A30;
+    --bg-input: #1C1C20;
+    --border-subtle: #222226;
+    --border-strong: #2E2E34;
+    --text-primary: #EFEFF2;
+    --text-secondary: #B4B4BC;
+    --text-muted: #7A7A82;
+    --accent: #FF8C42;
+    --accent-soft: rgba(255, 140, 66, 0.14);
+    --toggle-on: #22C55E;
+    --shadow-panel: 0 8px 40px rgba(0,0,0,0.4);
+    --shadow-card: 0 1px 2px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.25);
+    --shadow-card-hover: 0 2px 4px rgba(0,0,0,0.35), 0 12px 32px rgba(0,0,0,0.35);
+}
+
+/* ---------- Tokens: light ---------- */
+html[data-iana-theme="light"] {
+    --bg-base: #F4F4F7;
+    --bg-surface: #FFFFFF;
+    --bg-elevated: #F0F0F4;
+    --bg-hover: #E8E8ED;
+    --bg-active: #DDDDE5;
+    --bg-input: #F3F4F6;
+    --border-subtle: #E5E5EB;
+    --border-strong: #D5D5DD;
+    --text-primary: #131316;
+    --text-secondary: #4B4B52;
+    --text-muted: #7A7A82;
+    --accent: #E67E22;
+    --accent-soft: rgba(230, 126, 34, 0.12);
+    --toggle-on: #22C55E;
+    --shadow-panel: 0 8px 40px rgba(0,0,0,0.06);
+    --shadow-card: 0 1px 2px rgba(15,23,42,0.04), 0 4px 16px rgba(15,23,42,0.06);
+    --shadow-card-hover: 0 2px 4px rgba(15,23,42,0.06), 0 12px 32px rgba(15,23,42,0.10);
+}
+
+/* ---------- Reset ---------- */
+html, body, .stApp {
+    background-color: var(--bg-base) !important;
+    color: var(--text-primary) !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+    font-feature-settings: "cv11", "ss01";
+}
+header[data-testid="stHeader"] {
+    background-color: transparent !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+}
+header[data-testid="stHeader"] > div { background-color: transparent !important; }
+[data-testid="stToolbar"] { background: transparent !important; }
+[data-testid="stToolbar"] button { color: var(--text-secondary) !important; }
+[data-testid="stToolbar"] button:hover { color: var(--accent) !important; }
+
+[data-testid="stMainMenu"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+[data-testid="stMainMenu"] button { color: var(--text-secondary) !important; }
+[data-testid="stMainMenu"] button:hover {
+    color: var(--accent) !important;
+    background-color: var(--bg-hover) !important;
+}
+
+footer { display: none !important; }
+
+/* ---------- Sidebar ---------- */
+[data-testid="stSidebar"] {
+    background-color: var(--bg-surface) !important;
+    border-right: 1px solid var(--border-subtle) !important;
+}
+[data-testid="stSidebar"] > div:first-child {
+    padding-top: 0 !important;
+    padding-left: 0.85rem !important;
+    padding-right: 0.85rem !important;
+}
+[data-testid="stSidebarHeader"] {
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    border: none !important;
+}
+[data-testid="stSidebarHeader"] > div {
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+[data-testid="stSidebarContent"] { padding-top: 0.75rem !important; }
+[data-testid="stSidebar"] * { color: var(--text-secondary) !important; }
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 { color: var(--text-primary) !important; }
+
+/* ---------- Botões nativos de collapse ---------- */
+[data-testid="stSidebarCollapseButton"],
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="stExpandSidebarButton"],
+[data-testid="stSidebarNavCollapseButton"],
+[data-testid="stCollapsedControl"],
+[data-testid="collapsedControl"],
+button[kind="header"],
+button[kind="headerNoPadding"],
+button[aria-label="Close sidebar"],
+button[aria-label="Open sidebar"],
+button[aria-label="close sidebar"],
+button[aria-label="open sidebar"],
+button[title="Close sidebar"],
+button[title="Open sidebar"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* ---------- Botão gancho ---------- */
+.st-key-nav_trigger_hidden,
+[class*="st-key-nav_trigger_hidden"] {
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    clip: rect(0, 0, 0, 0) !important;
+    clip-path: inset(50%) !important;
+}
+
+/* ---------- Botão primário ---------- */
+[data-testid="stSidebar"] .stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #EC4899 0%, #EF4444 100%) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 10px !important;
+    height: 40px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    letter-spacing: 0.01em !important;
+    box-shadow: 0 2px 10px rgba(236, 72, 153, 0.22) !important;
+    transition: all 0.15s ease !important;
+}
+[data-testid="stSidebar"] .stButton > button[kind="primary"]:hover {
+    background: linear-gradient(135deg, #DB2777 0%, #DC2626 100%) !important;
+    box-shadow: 0 4px 16px rgba(236, 72, 153, 0.32) !important;
+    transform: translateY(-1px) !important;
+    color: #FFFFFF !important;
+}
+[data-testid="stSidebar"] .stButton > button[kind="primary"] * { color: #FFFFFF !important; }
+
+/* ---------- Botões secundários ---------- */
+[data-testid="stSidebar"] .stButton > button[kind="secondary"] {
+    background-color: var(--bg-input) !important;
+    color: var(--text-secondary) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 10px !important;
+    height: 38px !important;
+    font-weight: 500 !important;
+    font-size: 13.5px !important;
+    transition: all 0.15s ease !important;
+}
+[data-testid="stSidebar"] .stButton > button[kind="secondary"]:hover {
+    background-color: var(--bg-hover) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-strong) !important;
+}
+
+/* ---------- Toggle verde ---------- */
+[data-testid="stSidebar"] [data-baseweb="checkbox"] div:first-child,
+[data-testid="stSidebar"] [role="switch"][aria-checked="true"],
+[data-testid="stSidebar"] label:has(input[type="checkbox"]:checked) > div:first-child {
+    background-color: var(--toggle-on) !important;
+    border-color: var(--toggle-on) !important;
+}
+
+/* ---------- Inputs sidebar ---------- */
+[data-testid="stSidebar"] input[type="text"],
+[data-testid="stSidebar"] textarea {
+    background-color: var(--bg-input) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 10px !important;
+    color: var(--text-primary) !important;
+    font-size: 13.5px !important;
+    padding: 8px 12px !important;
+    transition: border-color 0.15s ease !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+[data-testid="stSidebar"] input[type="text"]:focus,
+[data-testid="stSidebar"] input[type="text"]:focus-visible,
+[data-testid="stSidebar"] textarea:focus,
+[data-testid="stSidebar"] textarea:focus-visible {
+    border-color: var(--border-strong) !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+[data-testid="stSidebar"] input[type="text"]::placeholder { color: var(--text-muted) !important; }
+
+[data-testid="stSidebar"] [data-baseweb="input"],
+[data-testid="stSidebar"] [data-baseweb="input"] > div,
+[data-testid="stSidebar"] [data-baseweb="base-input"] {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+[data-testid="stSidebar"] [data-baseweb="input"]:focus-within,
+[data-testid="stSidebar"] [data-baseweb="input"]:focus-within > div {
+    border-color: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* ---------- Select sidebar ---------- */
+[data-testid="stSidebar"] [data-baseweb="select"] > div {
+    background-color: var(--bg-input) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 10px !important;
+    color: var(--text-primary) !important;
+    min-height: 38px !important;
+    box-shadow: none !important;
+    outline: none !important;
+    transition: border-color 0.15s ease !important;
+}
+[data-testid="stSidebar"] [data-baseweb="select"]:hover > div {
+    border-color: var(--border-strong) !important;
+}
+[data-testid="stSidebar"] [data-baseweb="select"] > div:focus,
+[data-testid="stSidebar"] [data-baseweb="select"] > div:focus-within,
+[data-testid="stSidebar"] [data-baseweb="select"] > div:focus-visible {
+    border-color: var(--border-strong) !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+[data-testid="stSidebar"] [data-baseweb="select"] svg { color: var(--text-muted) !important; }
+[data-baseweb="popover"] [role="listbox"] {
+    background-color: var(--bg-surface) !important;
+    border: 1px solid var(--border-strong) !important;
+    border-radius: 10px !important;
+}
+[data-baseweb="popover"] [role="option"] {
+    color: var(--text-secondary) !important;
+    background-color: transparent !important;
+}
+[data-baseweb="popover"] [role="option"]:hover,
+[data-baseweb="popover"] [role="option"][aria-selected="true"] {
+    background-color: var(--bg-hover) !important;
+    color: var(--text-primary) !important;
+}
+[data-testid="stSidebar"] *:focus,
+[data-testid="stSidebar"] *:focus-visible { outline: none !important; }
+
+/* ---------- Expander conversas ---------- */
+[data-testid="stSidebar"] [data-testid="stExpander"] {
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 12px !important;
+    background-color: transparent !important;
+    overflow: hidden !important;
+}
+[data-testid="stSidebar"] [data-testid="stExpander"] summary {
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    color: var(--text-primary) !important;
+    padding: 10px 12px !important;
+    margin: 0 !important;
+}
+[data-testid="stSidebar"] [data-testid="stExpander"] summary:hover {
+    background-color: var(--bg-hover) !important;
+}
+[data-testid="stSidebar"] [data-testid="stExpander"] > details > div,
+[data-testid="stSidebar"] [data-testid="stExpander"] > details > div > div,
+[data-testid="stSidebar"] [data-testid="stExpander"] [data-testid="stVerticalBlock"],
+[data-testid="stSidebar"] [data-testid="stExpander"] [data-testid="stMarkdownContainer"] {
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 0 !important;
+}
+[data-testid="stSidebar"] [data-testid="stExpander"] [data-testid="stMarkdownContainer"] p {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* ---------- Bloco de conversas ---------- */
+.conv-block {
+    padding: 0 10px 12px 10px;
+    margin: 0;
+}
+.conv-block:first-of-type { padding-top: 8px; }
+.conv-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 4px 8px 4px;
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    user-select: none;
+    line-height: 1.2;
+}
+.conv-group .chev {
+    font-size: 10px;
+    opacity: 0.6;
+    transform: translateY(-1px);
+}
+.conv-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0;
+    margin: 0;
+}
+.conv-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    margin: 0;
+    border-radius: 10px;
+    text-decoration: none !important;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.4;
+    background-color: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    transition: background-color 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+    cursor: pointer;
+    outline: none;
+    box-sizing: border-box;
+}
+.conv-item:hover,
+.conv-item:focus {
+    background-color: var(--bg-hover);
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+    outline: none;
+}
+.conv-item.active {
+    background-color: var(--bg-active);
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+    font-weight: 500;
+}
+.conv-item.active .conv-icon { opacity: 0.85; }
+.conv-item .conv-icon {
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+    opacity: 0.55;
+}
+.conv-item .conv-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: inherit;
+}
+.conv-empty {
+    padding: 14px;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* ---------- Conteúdo principal ---------- */
+.block-container {
+    max-width: 780px !important;
+    padding-top: 2rem !important;
+    padding-bottom: 60px !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    margin: 1.5rem auto !important;
+}
+
+/* ---------- Aproximar chat input da base ---------- */
+[data-testid="stBottom"] {
+    padding-bottom: 12px !important;
+    padding-top: 0 !important;
+}
+[data-testid="stBottom"] > div {
+    padding-bottom: 12px !important;
+    padding-top: 0 !important;
+}
+[data-testid="stBottomBlockContainer"] {
+    padding-bottom: 12px !important;
+    padding-top: 0 !important;
+}
+
+/* ---------- Chat ---------- */
+[data-testid="stChatMessage"] {
+    background-color: transparent !important;
+    padding: 0.5rem 0 !important;
+}
+[data-testid="stChatMessageContent"] {
+    color: var(--text-primary) !important;
+    font-size: 15px !important;
+    line-height: 1.65 !important;
+}
+[data-testid="stChatMessage"] [data-testid="stChatMessageAvatarUser"] {
+    background-color: var(--accent-soft) !important;
+    border: 1px solid var(--accent) !important;
+}
+[data-testid="stChatMessage"] [data-testid="stChatMessageAvatarAssistant"] {
+    background-color: var(--bg-elevated) !important;
+    border: 1px solid var(--border-subtle) !important;
+}
+
+/* ---------- Input de chat ---------- */
+[data-testid="stChatInputContainer"],
+[data-testid="stChatInput"] {
+    background-color: var(--bg-surface) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 26px !important;
+    box-shadow: var(--shadow-panel) !important;
+}
+[data-testid="stChatInputContainer"] textarea,
+[data-testid="stChatInput"] textarea {
+    background-color: transparent !important;
+    color: var(--text-primary) !important;
+    font-size: 14.5px !important;
+}
+[data-testid="stChatInputContainer"] textarea::placeholder,
+[data-testid="stChatInput"] textarea::placeholder { color: var(--text-muted) !important; }
+[data-testid="stChatInputContainer"] button,
+[data-testid="stChatInput"] button[data-testid="stChatInputSubmitButton"] {
+    background-color: var(--bg-elevated) !important;
+    color: var(--text-secondary) !important;
+    border: none !important;
+    border-radius: 50% !important;
+    transition: all 0.15s ease !important;
+}
+[data-testid="stChatInputContainer"] button:hover,
+[data-testid="stChatInput"] button[data-testid="stChatInputSubmitButton"]:hover {
+    background-color: var(--bg-hover) !important;
+    color: var(--text-primary) !important;
+}
+
+/* ---------- Seletor de idioma (st.popover nativo) ---------- */
+.st-key-footer_lang,
+.st-key-footer_lang > div,
+.st-key-footer_lang [data-testid="stVerticalBlock"],
+.st-key-footer_lang [data-testid="stPopover"],
+.st-key-footer_lang [data-testid="stPopover"] > div {
+    height: 46px !important;
+    min-height: 46px !important;
+    max-height: 46px !important;
+    width: 100% !important;
+}
+.st-key-footer_lang [data-testid="stPopover"] > button {
+    width: 100% !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    max-height: 46px !important;
+    padding: 0 10px !important;
+    background: var(--bg-input) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 12px !important;
+    color: var(--text-secondary) !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    box-shadow: none !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    transition: all 0.15s ease !important;
+    text-transform: uppercase !important;
+}
+.st-key-footer_lang [data-testid="stPopover"] > button:hover {
+    background: var(--bg-hover) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-strong) !important;
+}
+.st-key-footer_lang [data-testid="stPopover"] > button * {
+    color: inherit !important;
+    white-space: nowrap !important;
+}
+.st-key-footer_lang [data-testid="stPopover"] > button > div {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+}
+.st-key-footer_lang [data-testid="stPopover"] > button p {
+    white-space: nowrap !important;
+    margin: 0 !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+}
+.st-key-footer_lang [data-testid="stPopover"] > button svg {
+    width: 10px !important;
+    height: 10px !important;
+    opacity: 0.7 !important;
+    flex-shrink: 0 !important;
+}
+
+/* Painel do popover (o menu que abre). */
+[data-testid="stPopoverBody"] {
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border-strong) !important;
+    border-radius: 12px !important;
+    padding: 6px !important;
+    box-shadow: var(--shadow-panel) !important;
+    min-width: 90px !important;
+}
+[data-testid="stPopoverBody"] [data-testid="stVerticalBlock"] {
+    gap: 2px !important;
+}
+[data-testid="stPopoverBody"] .stButton > button {
+    width: 100% !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    padding: 0 10px !important;
+    border-radius: 8px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em !important;
+    background: transparent !important;
+    color: var(--text-secondary) !important;
+    border: none !important;
+    box-shadow: none !important;
+    transition: all 0.12s ease !important;
+    text-transform: uppercase !important;
+}
+[data-testid="stPopoverBody"] .stButton > button:hover {
+    background: var(--bg-hover) !important;
+    color: var(--text-primary) !important;
+}
+[data-testid="stPopoverBody"] .stButton > button[kind="primary"] {
+    background: var(--bg-active) !important;
+    color: var(--accent) !important;
+}
+[data-testid="stPopoverBody"] .stButton > button[kind="primary"] * {
+    color: var(--accent) !important;
+}
+
+/* ---------- Mic (st.audio_input) ---------- */
+/* Container rígido em 46x46. Nada dentro pode estourar. */
+.st-key-footer_mic,
+.st-key-footer_mic > div,
+.st-key-footer_mic [data-testid="stVerticalBlock"] {
+    width: 46px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    max-height: 46px !important;
+}
+
+.st-key-footer_mic [data-testid="stAudioInput"],
+.st-key-footer_mic [data-testid="stAudioInput"] > div {
+    width: 46px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    max-height: 46px !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+/* O botão do mic é fixado em 46x46 e recebe visibility:hidden —
+   isso propaga para TODO filho (timer, spans, waveform). O SVG é
+   restaurado logo abaixo com visibility:visible. */
+.st-key-footer_mic [data-testid="stAudioInput"] button {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 46px !important;
+    height: 46px !important;
+    min-width: 46px !important;
+    max-width: 46px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: var(--bg-input) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 12px !important;
+    color: var(--text-secondary) !important;
+    overflow: hidden !important;
+    visibility: hidden !important;   /* esconde tudo: texto, timer, play, etc */
+    z-index: 2 !important;           /* acima do container vazio da onda sonora, que cobria o ícone */
+    font-size: 0 !important;
+    line-height: 0 !important;
+    transition: background 0.15s ease, border-color 0.15s ease !important;
+}
+
+/* Só o SVG volta a aparecer. */
+.st-key-footer_mic [data-testid="stAudioInput"] button svg,
+.st-key-footer_mic [data-testid="stAudioInput"] button svg * {
+    visibility: visible !important;
+    display: inline-block !important;
+    width: 18px !important;
+    height: 18px !important;
+    color: var(--text-secondary) !important;
+    flex-shrink: 0 !important;
+}
+
+.st-key-footer_mic [data-testid="stAudioInput"] button:hover {
+    background: var(--bg-hover) !important;
+    border-color: var(--border-strong) !important;
+}
+.st-key-footer_mic [data-testid="stAudioInput"] button:hover svg,
+.st-key-footer_mic [data-testid="stAudioInput"] button:hover svg * {
+    color: var(--text-primary) !important;
+}
+
+/* A onda sonora (WaveSurfer) tem z-index internos que cobriam o botão de
+   parar a gravação. isolation confina esses z-index numa camada abaixo do
+   botão, e pointer-events deixa o clique passar. */
+.st-key-footer_mic [data-testid="stAudioInputWaveSurfer"] {
+    isolation: isolate !important;
+    z-index: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Botões extras (play) e players ficam completamente escondidos. */
+.st-key-footer_mic [data-testid="stAudioInput"] button ~ button,
+.st-key-footer_mic [data-testid="stAudioInput"] [data-testid*="waveform" i],
+.st-key-footer_mic [data-testid="stAudioInput"] audio {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* ---------- Cards de sugestão ---------- */
+.st-key-sug_row [data-testid="stHorizontalBlock"] {
+    display: flex !important;
+    align-items: stretch !important;
+}
+.st-key-sug_row [data-testid="column"] {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+}
+.st-key-sug_row [data-testid="column"] > div {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    width: 100% !important;
+}
+.st-key-sug_row [data-testid="stVerticalBlock"] {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    height: 100% !important;
+    gap: 0 !important;
+}
+
+.sug-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px 16px 0 0;
+    border-bottom: none;
+    padding: 20px 20px 14px 20px;
+    flex: 1 1 auto;
+    min-height: 172px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--shadow-card);
+}
+.sug-card:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-card-hover);
+}
+.sug-icon { font-size: 26px; margin-bottom: 12px; line-height: 1; }
+.sug-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    line-height: 1.35;
+}
+.sug-desc {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height: 1.45;
+    flex-grow: 1;
+    /* Reserva 3 linhas: os cards ficam da mesma altura mesmo quando uma
+       descrição quebra em mais linhas que as outras. Esticar pela altura
+       da coluna depende da estrutura interna do Streamlit, que muda. */
+    min-height: calc(1.45em * 3);
+}
+.sug-tag {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+}
+
+[class*="st-key-sug_"][class*="_card"] {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    height: 100% !important;
+}
+[class*="st-key-sug_"][class*="_card"] [data-testid="stVerticalBlock"] {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    gap: 0 !important;
+}
+[class*="st-key-sug_"][class*="_card"] .stMarkdown {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+[class*="st-key-sug_"][class*="_card"] .stMarkdown > div {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+[class*="st-key-sug_"][class*="_card"] .sug-card {
+    flex: 1 !important;
+}
+[class*="st-key-sug_"][class*="_card"] .stButton {
+    margin: 0 !important;
+    margin-top: -1px !important;
+    flex-shrink: 0 !important;
+}
+[class*="st-key-sug_"][class*="_card"] .stButton > button {
+    background-color: var(--bg-surface) !important;
+    color: var(--text-secondary) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-left-radius: 16px !important;
+    border-bottom-right-radius: 16px !important;
+    height: 42px !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    box-shadow: var(--shadow-card) !important;
+    transition: all 0.15s ease !important;
+}
+[class*="st-key-sug_"][class*="_card"] .stButton > button:hover {
+    background-color: var(--bg-hover) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-strong) !important;
+    box-shadow: var(--shadow-card-hover) !important;
+}
+
+/* ---------- Greeting centralizado ---------- */
+.greeting-wrap {
+    text-align: center;
+    padding: 3rem 0 2.5rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.greeting-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #EC4899 0%, #EF4444 100%);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.32);
+}
+.greeting-avatar svg { display: block; }
+/* O h1 do Streamlit tem regra própria mais forte: o seletor com h1 e o !important garantem o tamanho.
+   Escala com a tela: 40 px no computador, 26 px no celular. */
+h1.greeting-title,
+[data-testid="stMarkdownContainer"] h1.greeting-title {
+    font-size: clamp(26px, 6vw, 40px) !important;
+    padding: 0 !important;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin: 0 0 10px 0;
+    text-align: center;
+}
+.greeting-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0;
+    text-align: center;
+    max-width: 520px;
+    line-height: 1.5;
+}
+
+/* ---------- Chip de anexo ---------- */
+.st-key-chip_doc .stButton > button {
+    padding: 4px 12px !important;
+    min-height: 0 !important;
+    background: var(--bg-elevated) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 10px !important;
+    font-size: 12.5px !important;
+    color: var(--text-secondary) !important;
+}
+.st-key-chip_doc .stButton > button:hover {
+    border-color: var(--border-strong) !important;
+    color: var(--text-primary) !important;
+}
+
+/* ---------- Código ---------- */
+[data-testid="stCodeBlock"] {
+    background: var(--bg-elevated) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 10px !important;
+}
+
+/* ---------- Copiar resposta ---------- */
+.iana-copy {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 4px;
+}
+.iana-copy-btn {
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--text-muted);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.14s ease;
+}
+.iana-copy-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+.iana-copy-btn.ok {
+    color: #4ADE80;
+    border-color: #4ADE80;
+}
+
+/* ---------- Toast ---------- */
+[data-testid="stToast"] {
+    background: var(--bg-elevated) !important;
+    border: 1px solid var(--border-strong) !important;
+    border-radius: 12px !important;
+    color: var(--text-primary) !important;
+}

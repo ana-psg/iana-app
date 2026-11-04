@@ -1,7 +1,9 @@
 import os
 
-URL_OLLAMA_CHAT = "http://localhost:11434/api/chat"
-URL_OLLAMA_EMBED = "http://localhost:11434/api/embeddings"
+# 127.0.0.1 e não "localhost": no Windows, "localhost" tenta primeiro o IPv6
+# (::1), onde o Ollama não escuta, e cada conexão nova perdia ~2 s.
+URL_OLLAMA = "http://127.0.0.1:11434"
+URL_OLLAMA_CHAT = URL_OLLAMA + "/api/chat"
 
 # =============================================================================
 # Modelos fixos da iAna
@@ -26,15 +28,32 @@ OLLAMA_THINK = False
 OLLAMA_NUM_CTX = 16384
 OLLAMA_OPTIONS = {
     "num_ctx": OLLAMA_NUM_CTX,
-    "num_predict": 1024,
+    # 1024 cortava respostas longas (código, listas) no meio da frase.
+    "num_predict": 2048,
     "temperature": 0.7,
     "top_p": 0.9,
 }
+# O modelo de visão tem num_ctx próprio (a regra do num_ctx igual vale por
+# modelo). Com 16384 ele e o gemma4 ocupavam 11,8 de 12 GB da placa; 8192
+# sobra para várias imagens e deixa folga para os dois ficarem carregados.
+OLLAMA_OPTIONS_VISAO = {
+    "num_ctx": 8192,
+    "num_predict": 2048,
+    "temperature": 0.3,
+}
+
+# Histórico enviado ao modelo a cada resposta. Antes eram só as 4 últimas
+# mensagens: a iAna esquecia o que foi dito duas perguntas atrás.
+HISTORICO_MAX_MENSAGENS = 16
+HISTORICO_MAX_CHARS = 16000
+# Com imagem, menos histórico: cada imagem pesa no contexto do modelo de visão.
+HISTORICO_MAX_MENSAGENS_VISAO = 4
 
 # =============================================================================
 # Diretórios do Projeto
 # =============================================================================
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Pasta do projeto (um nível acima do pacote iana/): conversas, memória e áudios ficam nela
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DIRETORIO_HISTORICO = os.path.join(BASE_DIR, "historico")
 DIRETORIO_AUDIO = os.path.join(BASE_DIR, "audio")
@@ -57,9 +76,9 @@ LADO_MAX_IMAGEM = 1024
 
 MAPA_IDIOMAS = {
     "pt": {"nome": "Português", "voz_tts": "pt-BR-FranciscaNeural", "stt": "pt-BR"},
-    "en": {"nome": "Inglês",    "voz_tts": "en-US-AriaNeural",      "stt": "en-US"},
-    "es": {"nome": "Espanhol",  "voz_tts": "es-ES-ElviraNeural",    "stt": "es-ES"},
-    "fr": {"nome": "Francês",   "voz_tts": "fr-FR-DeniseNeural",    "stt": "fr-FR"},
+    "en": {"nome": "Inglês", "voz_tts": "en-US-AriaNeural", "stt": "en-US"},
+    "es": {"nome": "Espanhol", "voz_tts": "es-ES-ElviraNeural", "stt": "es-ES"},
+    "fr": {"nome": "Francês", "voz_tts": "fr-FR-DeniseNeural", "stt": "fr-FR"},
 }
 
 IDIOMA_PADRAO = "pt"
@@ -72,14 +91,17 @@ Você é a iAna, uma assistente virtual inteligente, prestativa e amigável.
 Você foi criada para ajudar o usuário com as suas tarefas diárias, responder a perguntas e analisar informações.
 Responda no mesmo idioma da mensagem do usuário. Se não tiver certeza, responda em português.
 Se não souber a resposta, diga que não sabe, em vez de inventar.
+Quando a mensagem trouxer trechos da memória ou resultados da web, use-os se forem relevantes
+e diga de onde veio a informação; ignore os que não tiverem relação com a pergunta.
+Não cumprimente nem repita o nome da pessoa a cada resposta: vá direto ao ponto.
 """
 
 # Acrescentado ao SYSTEM_PROMPT quando há imagem. Sem isso o minicpm-v
 # respondia "não consigo ver imagens" em metade das vezes.
 COMPLEMENTO_PROMPT_VISAO = "Você consegue ver as imagens anexadas pelo usuário nesta conversa. Analise-as diretamente."
 
-PROMPT_PADRAO_IMAGEM ="""
-Analise a imagem fornecida e descreva detalhadamente o que vê. 
-Se houver texto na imagem, transcreva-o. 
+PROMPT_PADRAO_IMAGEM = """
+Analise a imagem fornecida e descreva detalhadamente o que vê.
+Se houver texto na imagem, transcreva-o.
 Responda sempre em português.
 """

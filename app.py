@@ -3,18 +3,30 @@ iAna — Assistente Pessoal de IA Local.
 Orquestrador Principal (App Entry Point).
 """
 
+import json
 import os
+import re
+
 import streamlit as st
 
-from config import DIRETORIO_HISTORICO, DIRETORIO_AUDIO, DIRETORIO_MEMORIA
-from storage import (
-    garantir_estado_inicial, carregar_conversa, limpar_audios_orfaos, exibir_avisos_pendentes
+from iana.brain import aquecer_modelos
+from iana.config import DIRETORIO_AUDIO, DIRETORIO_HISTORICO, DIRETORIO_MEMORIA
+from iana.processor import processar_resposta
+from iana.storage import (
+    avisar,
+    carregar_conversa,
+    exibir_avisos_pendentes,
+    garantir_estado_inicial,
+    limpar_audios_orfaos,
 )
-from ui import (
-    inicializar_interface, renderizar_sidebar, renderizar_input_chat,
-    exibir_boas_vindas, renderizar_mensagens_anteriores
+from iana.ui import (
+    exibir_boas_vindas,
+    inicializar_interface,
+    renderizar_input_chat,
+    renderizar_mensagens_anteriores,
+    renderizar_sidebar,
 )
-from processor import processar_resposta
+
 
 def _processar_carregamento_conversa() -> None:
     """
@@ -26,10 +38,18 @@ def _processar_carregamento_conversa() -> None:
         return
 
     st.query_params.clear()
-    dados = carregar_conversa(c_id)
+    # Mesmo filtro do storage: o id guardado é sempre o do arquivo (link editado à mão não vira outra conversa)
+    c_id = re.sub(r"[^a-zA-Z0-9_\-]", "", c_id)
+    try:
+        dados = carregar_conversa(c_id)
+    except (ValueError, OSError, json.JSONDecodeError):
+        avisar("Não consegui abrir essa conversa. O link está errado ou o arquivo está corrompido.")
+        return
     st.session_state.id_conversa_atual = c_id
     st.session_state.projeto_atual = dados.get("projeto", "Geral")
     st.session_state.resumo_conversa = dados.get("resumo", "")
+    st.session_state.nome_conversa = dados.get("nome")
+    st.session_state._resumo_futuro = None
     st.session_state.mensagens = dados.get("mensagens", [])
     st.session_state._ultimo_resumo_em = len(st.session_state.mensagens)
     st.session_state._pendente_processar = False
@@ -42,6 +62,7 @@ def _processar_carregamento_conversa() -> None:
     st.session_state._mic_version = st.session_state.get("_mic_version", 0) + 1
     st.rerun()
 
+
 def main() -> None:
     inicializar_interface()
 
@@ -49,6 +70,7 @@ def main() -> None:
         os.makedirs(d, exist_ok=True)
 
     garantir_estado_inicial()
+    aquecer_modelos()
     if not st.session_state.get("_audios_orfaos_limpos"):
         st.session_state._audios_orfaos_limpos = True
         limpar_audios_orfaos()
@@ -59,10 +81,7 @@ def main() -> None:
     if st.session_state.mensagens:
         renderizar_mensagens_anteriores()
 
-        if (
-            st.session_state.get("_pendente_processar")
-            and st.session_state.mensagens[-1]["role"] == "user"
-        ):
+        if st.session_state.get("_pendente_processar") and st.session_state.mensagens[-1]["role"] == "user":
             st.session_state._pendente_processar = False
             processar_resposta(estado, modo_voz=st.session_state.get("ultima_foi_voz", False))
             st.session_state.ultima_foi_voz = False
@@ -74,6 +93,7 @@ def main() -> None:
     # No fim: só chega aqui um ciclo que não foi interrompido por st.rerun,
     # então o aviso fica visível.
     exibir_avisos_pendentes()
+
 
 if __name__ == "__main__":
     main()

@@ -1,23 +1,30 @@
 """
 Módulo de Processamento Multimédia (Áudio, Imagem e Documentos).
 """
-import os
-import io
-import re
-import base64
-import asyncio
-import logging
-from concurrent.futures import ThreadPoolExecutor
-import PyPDF2
-import speech_recognition as sr
-import edge_tts
-import streamlit as st
-from PIL import Image, ImageOps
-from langdetect import detect, LangDetectException
 
-from config import DIRETORIO_AUDIO, LADO_MAX_IMAGEM, MAPA_IDIOMAS, IDIOMA_PADRAO
+import asyncio
+import base64
+import io
+import logging
+import os
+import re
+from concurrent.futures import ThreadPoolExecutor
+
+import edge_tts
+import pypdf
+import speech_recognition as sr
+import streamlit as st
+from langdetect import DetectorFactory, LangDetectException, detect
+from PIL import Image, ImageOps
+
+# Sem semente o langdetect é aleatório: o mesmo texto podia ganhar vozes de
+# idiomas diferentes de uma vez para outra.
+DetectorFactory.seed = 0
+
+from iana.config import DIRETORIO_AUDIO, IDIOMA_PADRAO, LADO_MAX_IMAGEM, MAPA_IDIOMAS  # noqa: E402  (depois de fixar a semente do langdetect)
 
 logger = logging.getLogger(__name__)
+
 
 # =============================================================================
 # Detecção de idioma
@@ -31,8 +38,10 @@ def _detectar_idioma(texto: str, fallback: str = IDIOMA_PADRAO) -> str:
         return fallback
     return codigo if codigo in MAPA_IDIOMAS else fallback
 
+
 def _prefs_idioma(codigo_iso: str) -> dict:
     return MAPA_IDIOMAS.get(codigo_iso, MAPA_IDIOMAS[IDIOMA_PADRAO])
+
 
 # =============================================================================
 # Extração de Documentos
@@ -45,8 +54,10 @@ def _decodificar(bytes_data: bytes) -> str:
             continue
     return bytes_data.decode("utf-8", errors="replace")
 
+
 def _extrair_docx(ficheiro) -> str:
     from docx import Document
+
     doc = Document(io.BytesIO(ficheiro.getvalue()))
     partes: list[str] = [p.text for p in doc.paragraphs if p.text.strip()]
     for tabela in doc.tables:
@@ -56,15 +67,13 @@ def _extrair_docx(ficheiro) -> str:
                 partes.append(" | ".join(celulas))
     return "\n".join(partes)
 
+
 def extrair_conteudo_documento(ficheiro) -> str | None:
     nome = ficheiro.name or ""
     ext = nome.rsplit(".", 1)[-1].lower() if "." in nome else ""
     try:
         if ext == "pdf":
-            return "".join(
-                (p.extract_text() or "") + "\n"
-                for p in PyPDF2.PdfReader(ficheiro).pages
-            )
+            return "".join((p.extract_text() or "") + "\n" for p in pypdf.PdfReader(ficheiro).pages)
         if ext in ("txt", "md", "csv"):
             return _decodificar(ficheiro.getvalue())
         if ext == "docx":
@@ -73,6 +82,7 @@ def extrair_conteudo_documento(ficheiro) -> str | None:
         logger.warning("Falha ao extrair conteudo de %s: %s", nome, e, exc_info=True)
         return None
     return None
+
 
 # =============================================================================
 # Imagem
@@ -88,17 +98,20 @@ def processar_imagem_otimizada(ficheiro) -> str | None:
         logger.warning("Falha ao processar imagem: %s", e, exc_info=True)
         return None
 
+
 # =============================================================================
 # Áudio — Speech-to-Text
 # =============================================================================
 def obter_reconhecedor_stt() -> sr.Recognizer:
     return sr.Recognizer()
 
+
 # Bônus do idioma padrão no modo automático. Sem ele, português e espanhol
 # empatam quando a mesma pessoa fala os dois com o mesmo sotaque. 1.15 não
 # bastava: "Qual é a capital da França" perdia para "cuál era capital de
 # Francia" (confiança 0,95 contra 0,82).
 _BONUS_IDIOMA_PADRAO = 1.3
+
 
 def _transcrever_forcado(rec: sr.Recognizer, dados, codigo_iso: str) -> tuple[str | None, str]:
     """Modo manual: tenta apenas o idioma escolhido."""
@@ -118,11 +131,13 @@ def _transcrever_forcado(rec: sr.Recognizer, dados, codigo_iso: str) -> tuple[st
         logger.warning("Erro no STT (%s): %s", locale, e, exc_info=True)
     return None, IDIOMA_PADRAO
 
+
 # Penalidade quando o texto transcrito não parece estar no idioma testado.
 # O Google às vezes devolve confiança alta para transcrições sem sentido
 # num idioma errado (ex.: áudio em português -> "Wow Head capital de Friends"
 # em es-ES com 0,89).
 _PENALIDADE_IDIOMA_DIVERGENTE = 0.5
+
 
 def _candidato_stt(rec: sr.Recognizer, dados, codigo_iso: str, locale: str) -> tuple[float, str, str] | None:
     try:
@@ -164,6 +179,7 @@ def _candidato_stt(rec: sr.Recognizer, dados, codigo_iso: str, locale: str) -> t
             pass
     return score, texto, codigo_iso
 
+
 # Identificação de idioma com Whisper. As "confianças" do Google gratuito são
 # praticamente fixas por idioma, então a heurística abaixo acaba escolhendo o
 # texto mais longo — e espanhol virava francês. O Whisper "base" acertou 7/7
@@ -172,14 +188,17 @@ def _candidato_stt(rec: sr.Recognizer, dados, codigo_iso: str, locale: str) -> t
 MODELO_WHISPER = "base"
 _CONFIANCA_MINIMA_IDIOMA = 0.5
 
+
 @st.cache_resource(show_spinner=False)
 def _obter_modelo_idioma():
     try:
         from faster_whisper import WhisperModel
+
         return WhisperModel(MODELO_WHISPER, device="cpu", compute_type="int8")
     except Exception as e:
         logger.warning("Whisper indisponivel, usando heuristica de idioma: %s", e)
         return None
+
 
 def _detectar_idioma_audio(dados: sr.AudioData) -> str | None:
     """Idioma falado (entre os de MAPA_IDIOMAS) ou None se não der para saber."""
@@ -188,6 +207,7 @@ def _detectar_idioma_audio(dados: sr.AudioData) -> str | None:
         return None
     try:
         import numpy as np
+
         pcm = dados.get_raw_data(convert_rate=16000, convert_width=2)
         audio = np.frombuffer(pcm, dtype=np.int16).astype(np.float32) / 32768.0
         _, _, probabilidades = modelo.detect_language(audio)
@@ -197,6 +217,7 @@ def _detectar_idioma_audio(dados: sr.AudioData) -> str | None:
     probabilidades = dict(probabilidades)
     melhor = max(MAPA_IDIOMAS, key=lambda c: probabilidades.get(c, 0.0))
     return melhor if probabilidades.get(melhor, 0.0) >= _CONFIANCA_MINIMA_IDIOMA else None
+
 
 def _transcrever_auto(rec: sr.Recognizer, dados) -> tuple[str | None, str]:
     """
@@ -210,6 +231,7 @@ def _transcrever_auto(rec: sr.Recognizer, dados) -> tuple[str | None, str]:
             return texto, codigo
     return _transcrever_por_heuristica(rec, dados)
 
+
 def _transcrever_por_heuristica(rec: sr.Recognizer, dados) -> tuple[str | None, str]:
     """
     Testa todos os idiomas (em paralelo) e escolhe pelo score
@@ -218,11 +240,7 @@ def _transcrever_por_heuristica(rec: sr.Recognizer, dados) -> tuple[str | None, 
     Motivo: quando o locale do Google não bate com o áudio, a transcrição
     costuma sair mais curta, com confiança menor ou em outra língua.
     """
-    tarefas = [
-        (codigo_iso, prefs["stt"])
-        for codigo_iso, prefs in MAPA_IDIOMAS.items()
-        if prefs.get("stt")
-    ]
+    tarefas = [(codigo_iso, prefs["stt"]) for codigo_iso, prefs in MAPA_IDIOMAS.items() if prefs.get("stt")]
     with ThreadPoolExecutor(max_workers=len(tarefas) or 1) as pool:
         resultados = pool.map(lambda t: _candidato_stt(rec, dados, *t), tarefas)
         candidatos = [c for c in resultados if c]
@@ -233,6 +251,7 @@ def _transcrever_por_heuristica(rec: sr.Recognizer, dados) -> tuple[str | None, 
     candidatos.sort(key=lambda t: t[0], reverse=True)
     _, texto, codigo = candidatos[0]
     return texto, codigo
+
 
 def transcrever_audio(bytes_audio: bytes, codigo_forcado: str | None = None) -> tuple[str | None, str]:
     """
@@ -253,6 +272,7 @@ def transcrever_audio(bytes_audio: bytes, codigo_forcado: str | None = None) -> 
 
     return _transcrever_auto(rec, dados)
 
+
 # =============================================================================
 # Áudio — Text-to-Speech
 # =============================================================================
@@ -262,9 +282,11 @@ def _limpar_texto_para_voz(texto: str) -> str:
         texto = texto.replace(ch, " ")
     return re.sub(r"\s+", " ", texto).strip()
 
+
 async def _gerar_audio_edge(texto: str, caminho: str, voz: str) -> None:
     os.makedirs(DIRETORIO_AUDIO, exist_ok=True)
     await edge_tts.Communicate(texto, voz).save(caminho)
+
 
 def gerar_audio_resposta(texto: str, id_msg: str) -> str | None:
     limpo = _limpar_texto_para_voz(texto)
@@ -278,10 +300,12 @@ def gerar_audio_resposta(texto: str, id_msg: str) -> str | None:
         logger.warning("Falha ao gerar audio TTS: %s", e, exc_info=True)
         return None
 
+
 def renderizar_audio_sequencial(b64: str) -> None:
     # Roda direto na página (sem iframe): o player e a fila ficam em window
     # e sobrevivem aos reruns.
-    st.html(f"""
+    st.html(
+        f"""
     <script>
     (function() {{
         const p = window;
@@ -328,4 +352,6 @@ def renderizar_audio_sequencial(b64: str) -> None:
         p._ianaPlayNext();
     }})();
     </script>
-    """, unsafe_allow_javascript=True)
+    """,
+        unsafe_allow_javascript=True,
+    )
